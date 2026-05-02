@@ -105,15 +105,6 @@ PYTHONPATH=. python3 tests/test_order.py
 
 ---
 
-## 🔮 Future Work
-
-- Replace fake embeddings with real models
-- Add persistent vector database
-- Build REST API
-- Add monitoring/logging
-
----
-
 ## 🏁 Conclusion
 
 This project demonstrates how to build a scalable, decoupled, and robust event-driven system for visual search.
