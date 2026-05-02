@@ -1,42 +1,43 @@
-# 🚀 Image Event System
+# 🚀 Event-Driven Image Vector Search System
 
-A simple event-driven system for image processing and vector search using a pub-sub architecture.
-
----
-
-## 📦 Event Schema
-
-All events follow a common structure:
-
-```json
-{
-  "topic": "embedding.created",
-  "event_id": "evt_123",
-  "payload": {},
-  "timestamp": "ISO-8601"
-}
-```
+A lightweight event-driven system for image processing and vector similarity search.
 
 ---
 
-## ✅ Key Design Principles
+## 🎯 Motivation
 
-### 1. Idempotency
-Each event contains a unique `event_id`.
+Traditional pipelines tightly couple components (annotation → embedding → search).
+
+This project redesigns the system using an **event-driven architecture**:
+
+- Loose coupling between services
+- Asynchronous processing
+- Better scalability and robustness
+
+---
+
+## 🧠 Architecture
+
+Inference → Annotation Service → Embedding Service → Vector Index Service
+
+Communication is handled via Redis Pub/Sub.
+
+---
+
+## 🔑 Key Design Principles
+
+### Idempotency
+Each event has a unique `event_id`.
 
 Duplicate events are safely ignored:
-
 ```
 [SKIP] Duplicate event: evt_xxx
 ```
 
 ---
 
-### 2. Robustness
-Malformed or invalid events do not crash the system.
-
-Examples:
-
+### Robustness
+Malformed events do not crash the system:
 ```
 [ERROR] Missing field: topic
 [WARN] Invalid event rejected
@@ -44,30 +45,37 @@ Examples:
 
 ---
 
-### 3. Eventual Consistency
+### Eventual Consistency
 The system does not require strict ordering.
 
-Example behavior:
-
+Example:
 ```
-Query arrives before embedding → empty results  
-Embedding arrives → index updated  
-Query again → correct results
+Query → empty result  
+Embedding → index updated  
+Query again → correct result
 ```
 
 ---
 
-## 🧠 System Architecture
+## ⚙️ Components
 
-- Annotation Service
-- Embedding Service
-- Vector Index Service
+### Annotation Service
+- Listens to `inference.completed`
+- Publishes `annotation.stored`
+
+### Embedding Service
+- Generates embeddings
+- Publishes `embedding.created`
+
+### Vector Index Service
+- Stores embeddings (FAISS)
+- Handles search queries
 
 ---
 
 ## 🚀 How to Run
 
-### Start Services
+Start services (3 terminals):
 
 ```
 PYTHONPATH=. python3 app/services/annotation_service.py
@@ -77,7 +85,7 @@ PYTHONPATH=. python3 app/services/vector_index_service.py
 
 ---
 
-### Run Tests
+Run tests:
 
 ```
 PYTHONPATH=. python3 tests/test_inference_event.py
@@ -87,6 +95,25 @@ PYTHONPATH=. python3 tests/test_order.py
 
 ---
 
-## 🎯 Conclusion
+## 🧪 What This Project Shows
 
-Event-driven + vector search + fault tolerance.
+- Event-driven architecture
+- Pub/Sub messaging
+- Vector similarity search
+- Fault-tolerant design
+- Eventual consistency
+
+---
+
+## 🔮 Future Work
+
+- Replace fake embeddings with real models
+- Add persistent vector database
+- Build REST API
+- Add monitoring/logging
+
+---
+
+## 🏁 Conclusion
+
+This project demonstrates how to build a scalable, decoupled, and robust event-driven system for visual search.
