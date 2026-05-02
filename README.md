@@ -114,6 +114,6 @@ PYTHONPATH=. python3 tests/test_order.py
 
 ---
 
-## 🏁 Conclusion
+## Conclusion
 
 This project demonstrates how to build a scalable, decoupled, and robust event-driven system for visual search.
