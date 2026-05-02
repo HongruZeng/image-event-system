@@ -1,22 +1,22 @@
-# 🚀 Event-Driven Image Vector Search System
+# Image Event System
 
-A lightweight event-driven system for image processing and vector similarity search.
+An event-driven system for processing image inference results and performing vector similarity search.
 
----
-
-## 🎯 Motivation
-
-Traditional pipelines tightly couple components (annotation → embedding → search).
-
-This project redesigns the system using an **event-driven architecture**:
-
-- Loose coupling between services
-- Asynchronous processing
-- Better scalability and robustness
+This project demonstrates how to build a **decoupled, fault-tolerant pipeline** using Redis Pub/Sub and FAISS.
 
 ---
 
-## 🧠 Architecture
+## Overview
+
+Instead of building a tightly coupled pipeline, this system uses an **event-driven architecture**:
+
+- Services communicate via events
+- Each component is independent
+- The system tolerates failures and out-of-order execution
+
+---
+
+## Architecture
 
 Inference → Annotation Service → Embedding Service → Vector Index Service
 
@@ -24,7 +24,32 @@ Communication is handled via Redis Pub/Sub.
 
 ---
 
-## 🔑 Key Design Principles
+## Components
+
+### 1. Annotation Service
+- Listens to: `inference.completed`
+- Extracts objects from inference results
+- Publishes: `annotation.stored`
+
+---
+
+### 2. Embedding Service
+- Listens to: `annotation.stored`
+- Generates embeddings (currently fake)
+- Publishes: `embedding.created`
+
+---
+
+### 3. Vector Index Service
+- Listens to:
+  - `embedding.created`
+  - `query.submitted`
+- Stores vectors using FAISS
+- Performs similarity search
+
+---
+
+##  Key Design Principles
 
 ### Idempotency
 Each event has a unique `event_id`.
@@ -57,23 +82,7 @@ Query again → correct result
 
 ---
 
-## ⚙️ Components
-
-### Annotation Service
-- Listens to `inference.completed`
-- Publishes `annotation.stored`
-
-### Embedding Service
-- Generates embeddings
-- Publishes `embedding.created`
-
-### Vector Index Service
-- Stores embeddings (FAISS)
-- Handles search queries
-
----
-
-## 🚀 How to Run
+## How to Run
 
 Start services (3 terminals):
 
@@ -95,7 +104,7 @@ PYTHONPATH=. python3 tests/test_order.py
 
 ---
 
-## 🧪 What This Project Shows
+## What This Project Shows
 
 - Event-driven architecture
 - Pub/Sub messaging
